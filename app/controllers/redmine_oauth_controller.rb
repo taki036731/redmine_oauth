@@ -80,8 +80,7 @@ class RedmineOauthController < AccountController
   
   def oauth_callback
     raise StandardError, l(:notice_access_denied) if params['error']
-    url = ENV['EWS_REDMINE_HOST'].nil? || ENV['EWS_REDMINE_HOST'].empty? ? oauth_callback_url : 'https://' + ENV['EWS_REDMINE_HOST'] + ENV['RELATIVE_URL'] + oauth_callback_path
-    logger.info 'url = ' + url
+    url = Setting.protocol + "://" + Setting.host_name
     
     case Setting.plugin_redmine_oauth[:oauth_name]
     when 'Azure AD'

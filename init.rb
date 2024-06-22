@@ -29,24 +29,39 @@ Redmine::Plugin.register :redmine_oauth do
   version '2.2.1'
   url 'https://github.com/kontron/redmine_oauth'
   author_url 'https://github.com/kontron/redmine_oauth/graphs/contributors'
-
+  
   requires_redmine version_or_higher: '5.1.0'
-
+  
   settings default: {
-    oauth_name: 'none',
-    site: '',
-    client_id: '',
-    client_secret: '',
-    tenant_id: '',
-    custom_name: '',
-    custom_auth_endpoint: '',
-    custom_token_endpoint: '',
-    custom_profile_endpoint: '',
-    custom_scope: 'openid profile email',
-    custom_uid_field: 'preferred_username',
-    custom_email_field: 'email',
-    button_color: '#ffbe6f',
-    button_icon: 'fas fa-address-card',
-    hide_login_form: nil
+  oauth_name: 'none',
+  site: '',
+  client_id: '',
+  client_secret: '',
+  tenant_id: '',
+  custom_name: '',
+  custom_auth_endpoint: '',
+  custom_token_endpoint: '',
+  custom_profile_endpoint: '',
+  custom_scope: 'openid profile email',
+  custom_uid_field: 'preferred_username',
+  custom_email_field: 'email',
+  button_color: '#ffbe6f',
+  button_icon: 'fas fa-address-card',
+  hide_login_form: nil
   }, partial: 'settings/oauth_settings'
-end
+  
+  module Redmine
+    @dev_mode = (ENV['REDMINE_DEV'] =~ /(true|True|TRUE)/)
+    def self.is_dev
+      return @dev_mode
+    end
+  end
+  
+  unless Redmine.is_dev
+    Redmine::MenuManager.map :admin_menu do |menu|
+      menu.delete :ldap_authentication
+      menu.delete :plugins
+      menu.delete :info
+    end
+  end
+end 
